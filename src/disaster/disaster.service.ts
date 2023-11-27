@@ -1,25 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { Info } from '../const';
-import { Code } from './entities/disaster.eneity';
+import { Test } from './entities/disaster.eneity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 // import { stringify } from 'querystring';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { CreateDisasterDto } from './dto/create-disaster.dto/create-disaster.dto';
+import { RegionCode } from './entities/region.entity';
 
 @Injectable()
 export class DisasterService {
   // 应该是在此处实现转换的逻辑
   constructor(
     private readonly info: Info,
-    @InjectRepository(Code)
-    private readonly disasterRepository: Repository<Code>,
+    @InjectRepository(Test)
+    private readonly disasterRepository: Repository<Test>,
+    @InjectRepository(RegionCode)
+    private readonly regionRepository: Repository<RegionCode>,
   ) {}
 
-  findLocation(code: string) {
-    // 我都不知道编码是什么
-    // 之后再做了
-    return code.substring(0,12);
+  async findLocation(code: string) {
+    let locationcode = code.substring(0, 12);
+    return await this.regionRepository.findOne({
+      where: { code: locationcode },
+    });
   }
 
   findTime(code: string) {
@@ -163,12 +167,21 @@ export class DisasterService {
 
   async findOne(id: string) {
     if (id.length == 36) {
-      const result =
+      let result =
         this.findTime(id) +
         this.findSource(id) +
         this.findCarrier(id) +
         this.findDisaster(id);
-      return result;
+
+      this.findLocation(id).then((response) => {
+        let regionresult: string =
+          response.province +
+          response.city +
+          response.country +
+          response.town +
+          response.village;
+        return regionresult + result;
+      });
     } else {
       const code = await this.disasterRepository.findOne({ where: { id: id } });
       return code;
@@ -188,15 +201,27 @@ export class DisasterService {
     });
   }
 
-  create(code: string) {
+  async create(code: string) {
     const disaster = new CreateDisasterDto();
 
-    disaster.code = code;
-    disaster.location = this.findLocation(code);
+    await this.findLocation(code).then((response) => {
+      let regionresult: string =
+        response.province +
+        response.city +
+        response.country +
+        response.town +
+        response.village;
+      disaster.location = regionresult;
+      disaster.location_code = code.substring(0, 12);
+    });
     disaster.time = this.findTime(code);
+    disaster.time_code = code.substring(12, 26);
     disaster.source = this.findSource(code);
+    disaster.source_code = code.substring(26, 29);
     disaster.carrier = this.findCarrier(code);
+    disaster.carrier_code = code[29]
     disaster.disaster = this.findDisaster(code);
+    disaster.disaster_code = code.substring(30, 36);
 
     return this.disasterRepository.save(disaster);
   }
@@ -204,15 +229,19 @@ export class DisasterService {
   async update(
     id: string,
     updateDisasterDto: CreateDisasterDto,
-  ): Promise<Code> {
+  ): Promise<Test> {
     const disaster = await this.findOneDto(id);
     // You can update specific properties of the disaster entity here
     disaster.location = updateDisasterDto.location;
+    disaster.location_code = updateDisasterDto.location_code;
     disaster.time = updateDisasterDto.time;
+    disaster.time_code = updateDisasterDto.time_code;
     disaster.source = updateDisasterDto.source;
+    disaster.source_code = updateDisasterDto.source_code;
     disaster.carrier = updateDisasterDto.carrier;
+    disaster.carrier_code = updateDisasterDto.carrier_code;
     disaster.disaster = updateDisasterDto.disaster;
-    disaster.code = updateDisasterDto.code;
+    disaster.disaster_code = updateDisasterDto.disaster_code;
 
     return this.disasterRepository.save(disaster);
   }

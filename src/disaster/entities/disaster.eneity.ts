@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-@Index(['location', 'time', 'source', 'carrier', 'disaster'])
+
 @Entity() // sql table === 'code'
-export class Code {
+export class Test {
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -10,17 +10,29 @@ export class Code {
   location: string;
 
   @Column()
+  location_code: string;
+
+  @Column({ type: 'timestamp' })
   time: Date;
+
+  @Column()
+  time_code: string;
 
   @Column()
   source: string;
 
   @Column()
+  source_code: string;
+
+  @Column()
   carrier: string;
+
+  @Column()
+  carrier_code: string;
 
   @Column()
   disaster: string;
 
   @Column()
-  code: string;
+  disaster_code: string;
 }

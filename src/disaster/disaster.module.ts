@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Code } from './entities/disaster.eneity';
+import { Test } from './entities/disaster.eneity';
 import { DisasterService } from './disaster.service';
 import { DisasterController } from './disaster.controller';
 import { Info } from 'src/const';
+import { RegionCode } from './entities/region.entity';
+import { Repository } from 'typeorm';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Code])],
-    providers: [DisasterService, Info],
+    imports: [TypeOrmModule.forFeature([Test]),TypeOrmModule.forFeature([RegionCode])],
+    providers: [DisasterService, Info, Repository],
     controllers: [DisasterController]
 })
 export class DisasterModule {
