@@ -166,6 +166,7 @@ export class DisasterService {
   }
 
   async findOne(id: string) {
+    let regionresult: string;
     if (id.length == 36) {
       let result =
         this.findTime(id) +
@@ -173,15 +174,15 @@ export class DisasterService {
         this.findCarrier(id) +
         this.findDisaster(id);
 
-      this.findLocation(id).then((response) => {
-        let regionresult: string =
+      await this.findLocation(id).then((response) => {
+        regionresult =
           response.province +
           response.city +
           response.country +
           response.town +
           response.village;
-        return regionresult + result;
       });
+      return regionresult + result;
     } else {
       const code = await this.disasterRepository.findOne({ where: { id: id } });
       return code;
@@ -219,7 +220,7 @@ export class DisasterService {
     disaster.source = this.findSource(code);
     disaster.source_code = code.substring(26, 29);
     disaster.carrier = this.findCarrier(code);
-    disaster.carrier_code = code[29]
+    disaster.carrier_code = code[29];
     disaster.disaster = this.findDisaster(code);
     disaster.disaster_code = code.substring(30, 36);
 
