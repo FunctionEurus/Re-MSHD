@@ -6,6 +6,9 @@ import { DisasterService } from './disaster/disaster.service';
 import { Info } from './const';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DisasterModule } from './disaster/disaster.module';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
@@ -19,7 +22,7 @@ import { DisasterModule } from './disaster/disaster.module';
       autoLoadEntities: true,
       synchronize: true
     }
-  ), DisasterModule],
+  ), DisasterModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
