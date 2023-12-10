@@ -13,9 +13,11 @@ export class UserService {
   ) {}
 
   crypto = require('crypto');
+  
   generateSalt() {
     return crypto.randomBytes(16).toString('hex');
   }
+
   hashPassword(password, salt) {
     return crypto
       .pbkdf2Sync(password, salt, 10000, 64, 'sha512')
