@@ -8,6 +8,14 @@
 $ npm install
 ```
 
+## Running the database
+
+```bash
+$ docker-compose up -d
+
+$ cat database_dump.sql | docker exec -i mshd-db-1 psql -U postgres
+```
+
 ## Running the app
 
 ```bash
@@ -18,22 +26,5 @@ $ npm run start
 $ npm run start:dev
 
 # production mode
-$ npm run start:prod
+$ npm run start:prods
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## License
-
-Nest is [MIT licensed](LICENSE).
